@@ -1,4 +1,5 @@
 # XBMCnfoMoviesImporter
+# XBMCnfoMoviesImporter
 # spec'd from: http://wiki.xbmc.org/index.php?title=Import_-_Export_Library#Video_nfo_Files
 #
 # Original code author: Harley Hooligan
@@ -28,7 +29,7 @@ PERCENT_RATINGS = {
 
 class xbmcnfo(Agent.Movies):
 	name = 'XBMCnfoMoviesImporter'
-	ver = '1.1-52-g75074b5-158'
+	ver = '1.1-53-gb5da164-159'
 	primary_provider = True
 	languages = [Locale.Language.NoLanguage]
 	accepts_from = ['com.plexapp.agents.localmedia','com.plexapp.agents.opensubtitles','com.plexapp.agents.podnapisi','com.plexapp.agents.subzero']
@@ -555,8 +556,14 @@ class xbmcnfo(Agent.Movies):
 				try:
 					sets = nfoXML.xpath('set')
 					metadata.collections.clear()
-					[metadata.collections.add(s.strip()) for setXML in sets for s in setXML.text.split("/")]
-				except: pass
+					for setXML in sets:
+						for s in setXML.text.split("/"):
+							collection = s.strip()
+							metadata.collections.add(collection)
+							self.DLog ("Adding Set/Collection tag: " + collection)
+				except:
+					self.DLog ("Exception adding Set/Collection tag:" + traceback.format_exc()))
+					pass
 				# Duration
 				try:
 					self.DLog ("Trying to read <durationinseconds> tag from .nfo file...")
